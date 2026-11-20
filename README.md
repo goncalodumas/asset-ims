@@ -279,7 +279,7 @@ pnpm run maintenance:generate
 
 The first command checks the horizon and conflicts without creating occurrences; the second creates missing records. Run them from the project directory with the intended database configured.
 
-The repository includes [systemd service and timer units](deploy/systemd/). Once installed and enabled, the timer runs daily at **03:20 Europe/Lisbon** and can catch up after downtime. Review the service user, working directory and Node.js path before installing on another host. The units in Git do not confirm that the timer is active on a particular server.
+The repository includes [systemd service and timer units]. Once installed and enabled, the timer runs daily at **03:20 Europe/Lisbon** and can catch up after downtime. Review the service user, working directory and Node.js path before installing on another host. The units in Git do not confirm that the timer is active on a particular server.
 
 ```sh
 systemctl list-timers sga-maintenance-generation.timer
