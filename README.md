@@ -1,14 +1,14 @@
-# SGA — Asset and Maintenance Management
+# IMSCat — Integrated Management System
 
-SGA is an internal application for managing physical assets, functional systems, maintenance work, building inspections and technical knowledge.
+IMSCat is an internal application for managing infrastructure, maintenance work, controlled quality documentation and technical knowledge. The repository and existing technical identifiers use the name SGA.
 
 Built with **Payload CMS, Next.js and PostgreSQL**, it combines a practical asset register with maintenance records, technical diagrams, building plans, inspection reports and traceable decisions.
 
 The project is under active development. Its catalogue and operational workflows are being tested with real equipment and service records before wider use.
 
-**Documentation updated:** 2026/11/19.
+**Documentation updated:** 2026/11/26.
 
-> **Current highlights:** dashboard maps for assets requiring attention, improved asset search and filters, building inspections with interactive plans and PDF previews, a searchable Markdown knowledge base, and a scheduled maintenance generation command.
+The controlled document catalogue supports formal approval and internal consultation alongside infrastructure management, a searchable technical knowledge base, interactive inspection plans and scheduled maintenance generation.
 
 ## Contents
 
@@ -23,6 +23,7 @@ The project is under active development. Its catalogue and operational workflows
 - [Asset status history](#asset-status-history)
 - [Building inspections](#building-inspections)
 - [Knowledge base](#knowledge-base)
+- [Controlled quality documents](#controlled-quality-documents)
 - [Roles and access control](#roles-and-access-control)
 - [Frontend](#frontend)
 - [Administration forms](#administration-forms)
@@ -52,23 +53,25 @@ Code, field names and machine identifiers are in **English**. User-facing labels
 
 ## Domain model
 
-| Concept | Responsibility |
-| --- | --- |
-| Entity | A manufacturer, supplier, service provider or other organisation. One entity can have several roles. |
-| Asset type | A reusable classification with visual presentation settings. |
-| Asset model | Product identification, manufacturer, reference image, documents and notes. |
-| Asset | An individual physical item with its own code, location, history and photographs. |
-| Functional system | A meaningful operational unit, such as a fire detection or refrigeration system. |
-| System component | An asset's or group of assets' participation in a functional system, including functional connections. |
-| Ticket | A fault, request or corrective process that may require several interventions. |
-| Intervention | A dated record of work performed. |
-| Service agreement | The provider, scope, procedure and contractual terms of a service. |
-| Maintenance plan | A recurring schedule and equipment scope within a service agreement. |
-| Planned occurrence | One expected execution associated with a year, quarter or month. |
-| Asset status event | A confirmed, dated change in the condition of an asset. |
-| Building inspection | A dated visit documenting the condition of a building or space. |
-| Inspection point | A specific observation, with optional plan coordinates, photographs and asset references. |
-| Knowledge article | An internal note or guide with a category, tags and controlled visibility. |
+| Concept             | Responsibility                                                                                         |
+| ------------------- | ------------------------------------------------------------------------------------------------------ |
+| Entity              | A manufacturer, supplier, service provider or other organisation. One entity can have several roles.   |
+| Asset type          | A reusable classification with visual presentation settings.                                           |
+| Asset model         | Product identification, manufacturer, reference image, documents and notes.                            |
+| Asset               | An individual physical item with its own code, location, history and photographs.                      |
+| Functional system   | A meaningful operational unit, such as a fire detection or refrigeration system.                       |
+| System component    | An asset's or group of assets' participation in a functional system, including functional connections. |
+| Ticket              | A fault, request or corrective process that may require several interventions.                         |
+| Intervention        | A dated record of work performed.                                                                      |
+| Service agreement   | The provider, scope, procedure and contractual terms of a service.                                     |
+| Maintenance plan    | A recurring schedule and equipment scope within a service agreement.                                   |
+| Planned occurrence  | One expected execution associated with a year, quarter or month.                                       |
+| Asset status event  | A confirmed, dated change in the condition of an asset.                                                |
+| Building inspection | A dated visit documenting the condition of a building or space.                                        |
+| Inspection point    | A specific observation, with optional plan coordinates, photographs and asset references.              |
+| Knowledge article   | An internal note or guide with a category, tags and controlled visibility.                             |
+| Controlled document | A stable document code, classification, responsible area, distribution setting and current revision.   |
+| Quality revision    | The content, revision number, assigned reviewers and recorded approval decisions for one edition.      |
 
 System components are independent records. Their relationship to the functional system is stored on the component and displayed through a join in the system form.
 
@@ -76,34 +79,36 @@ Interventions are also independent records, even when created through a ticket o
 
 ## Collections
 
-| Collection slug | Purpose |
-| --- | --- |
-| `users` | Authentication, user accounts and roles. |
-| `manufacturers` | Unified entities and their roles. The historical slug is retained even though the collection is labelled **Entidades**. |
-| `asset-types` | Asset classifications, icons, colours and map marker shapes. |
-| `asset-models` | Shared product identity and reference documentation. |
-| `assets` | Individual physical assets. |
-| `functional-systems` | Functional systems. |
-| `system-components` | System membership and functional connections. |
-| `connection-types` | Reusable connection classifications. |
-| `building-plans` | Composite building plans uploaded as SVG or PNG. |
-| `departments` | Organisational allocation. |
-| `cost-centers` | Cost allocation. |
-| `tickets` | Faults and work requests. |
-| `interventions` | Work performed and its results. |
-| `service-agreements` | Maintenance and service agreements. |
-| `maintenance-plans` | Scope and recurrence rules within service agreements. |
-| `planned-occurrences` | Expected maintenance executions. |
-| `inspections` | Building inspections and issuance records. |
-| `inspection-points` | Observations linked to an inspection, with location, photographs and related records. |
-| `knowledge-articles` | Searchable internal Markdown articles. |
-| `asset-status-events` | Authoritative asset status history. |
-| `asset-status-batches` | Controlled bulk status registration. |
-| `asset-compliance-records` | Compliance records; their operational workflow still needs further consolidation. |
-| `images` | Shared uploaded images and generated image variants. |
-| `documents` | Documents, document classification and document date. |
-| `document-types` | Reusable document classifications. |
-| `media` | Additional media collection retained from the application setup. Confirm its references before consolidating it with the dedicated upload collections. |
+| Collection slug            | Purpose                                                                                                                                                |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `users`                    | Authentication, user accounts and roles.                                                                                                               |
+| `manufacturers`            | Unified entities and their roles. The historical slug is retained even though the collection is labelled **Entidades**.                                |
+| `asset-types`              | Asset classifications, icons, colours and map marker shapes.                                                                                           |
+| `asset-models`             | Shared product identity and reference documentation.                                                                                                   |
+| `assets`                   | Individual physical assets.                                                                                                                            |
+| `functional-systems`       | Functional systems.                                                                                                                                    |
+| `system-components`        | System membership and functional connections.                                                                                                          |
+| `connection-types`         | Reusable connection classifications.                                                                                                                   |
+| `building-plans`           | Composite building plans uploaded as SVG or PNG.                                                                                                       |
+| `departments`              | Organisational allocation.                                                                                                                             |
+| `cost-centers`             | Cost allocation.                                                                                                                                       |
+| `tickets`                  | Faults and work requests.                                                                                                                              |
+| `interventions`            | Work performed and its results.                                                                                                                        |
+| `service-agreements`       | Maintenance and service agreements.                                                                                                                    |
+| `maintenance-plans`        | Scope and recurrence rules within service agreements.                                                                                                  |
+| `planned-occurrences`      | Expected maintenance executions.                                                                                                                       |
+| `inspections`              | Building inspections and issuance records.                                                                                                             |
+| `inspection-points`        | Observations linked to an inspection, with location, photographs and related records.                                                                  |
+| `knowledge-articles`       | Searchable internal Markdown articles.                                                                                                                 |
+| `quality-documents`        | Controlled document records and their current revision.                                                                                                |
+| `quality-document-revisions` | Revision content, review rounds and publication history.                                                                                               |
+| `asset-status-events`      | Authoritative asset status history.                                                                                                                    |
+| `asset-status-batches`     | Controlled bulk status registration.                                                                                                                   |
+| `asset-compliance-records` | Compliance records; their operational workflow still needs further consolidation.                                                                      |
+| `images`                   | Shared uploaded images and generated image variants.                                                                                                   |
+| `documents`                | Documents, document classification and document date.                                                                                                  |
+| `document-types`           | Reusable document classifications.                                                                                                                     |
+| `media`                    | Additional media collection retained from the application setup. Confirm its references before consolidating it with the dedicated upload collections. |
 
 The exact `slug` in each collection file remains authoritative.
 
@@ -203,15 +208,15 @@ The date comes from the entered occurrence/communication date rather than simply
 
 The resolution workflow supports:
 
-| Action | Result |
-| --- | --- |
-| Start or resume | Work in progress. |
-| Put on hold | Work waiting, with a reason. |
-| Propose resolution | Resolution awaiting coordination's validation. |
-| Validate | Ticket closed. |
-| Return | Work resumes, with a reason. |
+| Action                     | Result                                              |
+| -------------------------- | --------------------------------------------------- |
+| Start or resume            | Work in progress.                                   |
+| Put on hold                | Work waiting, with a reason.                        |
+| Propose resolution         | Resolution awaiting coordination's validation.      |
+| Validate                   | Ticket closed.                                      |
+| Return                     | Work resumes, with a reason.                        |
 | Resolve and close directly | Coordination completes a simple case in one action. |
-| Reopen | Work resumes while preserving earlier decisions. |
+| Reopen                     | Work resumes while preserving earlier decisions.    |
 
 A resolution proposal requires a supporting intervention that belongs to the ticket. Closing also checks for outstanding asset status proposals.
 
@@ -225,7 +230,7 @@ Intervention codes follow:
 I-YYMMDD-XXXX
 ```
 
-The date comes from `performedAt`. The intervention records its summary, actual date, provider, scope, work details and supporting documents.
+The date comes from `performedAt`. The intervention records its summary, actual date, provider, scope, work details and supporting documents. Tickets and interventions can also record photographic evidence.
 
 An intervention can originate from a **ticket** or a **planned occurrence**, but not both at once. The current model also permits a direct record without either origin.
 
@@ -279,7 +284,7 @@ pnpm run maintenance:generate
 
 The first command checks the horizon and conflicts without creating occurrences; the second creates missing records. Run them from the project directory with the intended database configured.
 
-The repository includes [systemd service and timer units]. Once installed and enabled, the timer runs daily at **03:20 Europe/Lisbon** and can catch up after downtime. Review the service user, working directory and Node.js path before installing on another host. The units in Git do not confirm that the timer is active on a particular server.
+The repository includes [systemd service and timer units](deploy/systemd/). Once installed and enabled, the timer runs daily at **03:20 Europe/Lisbon** and can catch up after downtime. Review the service user, working directory and Node.js path before installing on another host. The units in Git do not confirm that the timer is active on a particular server.
 
 ```sh
 systemctl list-timers sga-maintenance-generation.timer
@@ -290,15 +295,17 @@ Deactivating a plan or recording an agreement's end affects future generation. O
 
 ### Completion and validation
 
-| State | Meaning |
-| --- | --- |
-| `planned` | Work remains to be completed. |
-| `pending-validation` | Completion has been proposed. |
-| `completed` | Completion has been validated. |
-| `waived` | The occurrence was explicitly dispensed with. |
-| `cancelled` | The occurrence was cancelled. |
+| State                | Meaning                                       |
+| -------------------- | --------------------------------------------- |
+| `planned`            | Work remains to be completed.                 |
+| `pending-validation` | Completion has been proposed.                 |
+| `completed`          | Completion has been validated.                |
+| `waived`             | The occurrence was explicitly dispensed with. |
+| `cancelled`          | The occurrence was cancelled.                 |
 
 Technicians can propose completion using a supporting intervention. Coordination can validate, return, dispense with, cancel or reopen an occurrence, and can complete and validate a simple case directly.
+
+Users with the relevant permissions can open occurrence management from the service agreement or a linked intervention. The annual view and occurrence table share the same status indicators.
 
 - The original reference period is retained.
 - The effective completion date is separate from the validation date.
@@ -320,13 +327,13 @@ Finding a fault can be the result of a successfully performed inspection. Mainte
 
 Supported states are:
 
-| Value | Meaning |
-| --- | --- |
-| `operational` | Operational. |
-| `restricted` | Operational with restrictions. |
-| `out-of-service` | Out of service. |
-| `under-repair` | Under repair. |
-| `retired` | Retired. |
+| Value            | Meaning                        |
+| ---------------- | ------------------------------ |
+| `operational`    | Operational.                   |
+| `restricted`     | Operational with restrictions. |
+| `out-of-service` | Out of service.                |
+| `under-repair`   | Under repair.                  |
+| `retired`        | Retired.                       |
 
 Tickets and interventions contain **asset status proposals**. A proposal can select multiple assets sharing the proposed status, effective date and justification. Different outcomes or reasons should use separate proposal rows.
 
@@ -358,40 +365,69 @@ Coordination or administration can issue an inspection once it has at least one 
 
 Articles store Markdown with a title, summary, category and comma-separated tags. The frontend renders GitHub Flavored Markdown and combines text search with tag filtering. Article visibility applies in server queries, including to the articles used to build the tag list.
 
-| Visibility | Readers |
-| --- | --- |
-| Administrator | Administrators only. |
-| Restricted | Administrators and coordinators. |
-| Internal | Administrators and coordinators can read drafts; other SGA users see published articles only. |
+| Visibility    | Readers                                                                                       |
+| ------------- | --------------------------------------------------------------------------------------------- |
+| Administrator | Administrators only.                                                                          |
+| Restricted    | Administrators and coordinators.                                                              |
+| Internal      | Administrators and coordinators can read drafts; other SGA users see published articles only. |
 
 Published means available inside SGA. The article collection retains up to 25 versions per document. Version history is restricted to administrators because older revisions may contain restricted content.
 
-The knowledge base is for technical notes and guides. Controlled quality documents with formal approvals and effective revisions are a separate design topic.
+Use the knowledge base for technical notes and guides. Policies, manuals, procedures, work instructions and forms that require formal approval belong in the controlled document catalogue.
+
+## Controlled quality documents
+
+A controlled document has a unique code, a type, an optional responsible department and a reference to its current revision. Each revision has its own number, title, content and change summary.
+
+### Drafting and approval
+
+1. The editor saves a draft with content and assigns one or more eligible reviewers.
+2. Submission starts a review round and records its participants. The account that registered the revision and the person who submits it are excluded from the assigned reviewer list.
+3. All assigned reviewers must approve. A return requires a reason and reopens the draft for editing. The review history records the decisions.
+4. The last approval makes the revision effective and archives the previous edition. Later changes can start from a new draft based on an existing approved or effective edition.
+
+Revisions can use Markdown or the Lexical visual editor. Markdown supports GitHub Flavored Markdown and standalone, sanitised HTML tables with merged cells using `rowspan` or `colspan`. The effective edition and the saved revision preview use the same renderer.
+
+The revision field shown as **Registado por** in the admin form and **Autor da revisão** in the reading view records the account that registered the revision. The pilot has identified a need to record the person credited with preparing the source document separately, with their original date where available.
+
+### Reading and distribution
+
+**Documentos em vigor** lists the effective edition of each document available to the signed-in reader. **Reservada à Qualidade** is the default. Setting **Consulta interna** on the document lets signed-in IMSCat users read its current effective revision. When a replacement takes effect, the same document link opens the new edition. Drafts, archived editions and revision previews remain within the Quality access rules.
+
+**Revisões em curso** is the workspace for Quality staff. Editors and administrators can find drafts and revisions under review. Approvers with no editing role see the revisions assigned to them for review.
+
+### Importing existing controlled documents
+
+For the pilot, start with the complete edition in force and keep the original file. Preserve the source revision number, dates and credited participants. Record the original dates separately from the IMSCat registration and approval dates. Use **Resumo das alterações** for the imported edition's own change summary. Record earlier editions known only from the source change log in a historical section. If an original copy of an earlier edition is recovered, retain it with that historical entry.
+
+Attachments that form part of a controlled procedure should follow its revision. Certificates and work reports should be recorded as supporting evidence linked to the relevant intervention, asset or system where the model supports that link.
 
 ## Roles and access control
 
-Roles are stored on users and can be combined:
+Roles are stored on users and can be combined. A user with only the Consultation role reads through the frontend. Quality roles can also grant access to the relevant administration screens.
 
-| Role | Main responsibility |
-| --- | --- |
-| `admin` | User administration, configuration and authorised management operations. |
-| `coordinator` | Catalogue/planning management, work coordination and validation. |
-| `technician` | Consultation, operational records and proposals. |
-| `viewer` | Read access through the frontend; no administration-panel access. |
+| Role          | Main responsibility                                                      |
+| ------------- | ------------------------------------------------------------------------ |
+| `admin`       | User administration, configuration and authorised management operations. |
+| `coordinator` | Catalogue/planning management, work coordination and validation.         |
+| `technician`  | Consultation, operational records and proposals.                         |
+| `viewer`      | Frontend consultation.                                                   |
+| `quality-editor` | Draft and submit quality revisions when combined with an application access role. |
+| `quality-approver` | Review assigned quality revisions when combined with an application access role. |
 
 `src/lib/roleAccess.ts` applies policies where collections are registered in `payload.config.ts`.
 
-| Policy | Main behaviour |
-| --- | --- |
-| `users` | User management is visible to administrators. Existing self-account restrictions are preserved. |
-| `catalog` | Assets and systems are visible to technicians for consultation; management belongs to coordination and administration. |
-| `reference` | Reference collections are maintained by coordination/administration and hidden from the technician's menu. Read access remains available to relationships. |
-| `attachments` | Operational users can upload files; existing-file updates belong to coordination/administration. |
-| `work` | Technicians can create and work on operational records, subject to workflow safeguards. |
-| `planning` | Coordination creates occurrences. Technicians can submit actions while planning and scope fields are protected. |
-| `history` | Confirmed history is readable, with creation restricted and ordinary updates/deletions blocked. |
-| `batches` | Bulk state registration belongs to coordination/administration. |
-| `agreements` | Agreements are maintained by coordination/administration and hidden from the technician's menu. Read access remains available. |
+| Policy        | Main behaviour                                                                                                                                             |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `users`       | User management is visible to administrators. Existing self-account restrictions are preserved.                                                            |
+| `catalog`     | Assets and systems are visible to technicians for consultation; management belongs to coordination and administration.                                     |
+| `reference`   | Reference collections are maintained by coordination/administration and hidden from the technician's menu. Read access remains available to relationships. |
+| `attachments` | Operational users can upload files; existing-file updates belong to coordination/administration.                                                           |
+| `work`        | Technicians can create and work on operational records, subject to workflow safeguards.                                                                    |
+| `planning`    | Coordination creates occurrences. Technicians can submit actions while planning and scope fields are protected.                                            |
+| `history`     | Confirmed history is readable, with creation restricted and ordinary updates/deletions blocked.                                                            |
+| `batches`     | Bulk state registration belongs to coordination/administration.                                                                                            |
+| `agreements`  | Agreements are maintained by coordination/administration and hidden from the technician's menu. Read access remains available.                             |
 
 Policies restrict existing access functions rather than replacing their protections. They also preserve hooks. For example, an administrator's collection-level delete permission does not bypass a hook protecting a confirmed record.
 
@@ -403,26 +439,32 @@ Trusted internal status projection updates use the existing event hook and trans
 
 User profiles include professional identity and contact details. Employment status is recorded separately from roles and does not itself revoke access. An internal responsible person can be assigned to work and planning records; when unset, the frontend can resolve responsibility from the source record.
 
+Administrators can draft and review Quality revisions within the workflow rules. Quality collection APIs and saved revision previews require Quality access. Internal consultation uses the filtered catalogue and current revision pages.
+
 ## Frontend
 
-| Route | Content |
-| --- | --- |
-| `/` | Maintenance dashboard: work queues, pending validation, recent interventions and asset attention maps. |
-| `/assets` | Search by code, model, serial number or internal designation; combine asset type, model and building filters with pagination. |
-| `/assets/[code]` | Identity, model reference image, location, photo gallery, documents, work records and status timeline. |
-| `/asset-models/[id]` | Model reference information and documentation. |
-| `/systems`, `/systems/[id]` | System directory, functional diagrams, asset plans and the latest ten tickets and interventions. |
-| `/systems/[id]/register` | Paginated system work records. |
-| `/tickets/[code]` | Ticket details, interventions and resolution history. |
-| `/interventions`, `/interventions/[code]` | Searchable intervention directory and individual work records. |
-| `/service-agreements`, `/service-agreements/[id]` | Agreement directory, provider and equipment details, plans and a calendar comparing planned periods with actual work. |
-| `/planned-occurrences/[id]` | Reference period, interventions and completion history. |
-| `/entities`, `/entities/[id]` | Entity directory, logos, agreements, documents and associated interventions. |
-| `/inspections`, `/inspections/[code]` | Inspection directory, interactive plan and observation photographs. |
-| `/inspections/[code]/pdf` | On-demand inspection PDF preview. |
-| `/knowledge`, `/knowledge/[id]` | Searchable articles, tag filters and rendered Markdown. |
+| Route                                             | Content                                                                                                                       |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `/`                                               | Maintenance dashboard: work queues, pending validation, recent interventions and asset attention maps.                        |
+| `/assets`                                         | Search by code, model, serial number or internal designation; combine asset type, model and building filters with pagination. |
+| `/assets/[code]`                                  | Identity, model reference image, location, photo gallery, documents, work records and status timeline.                        |
+| `/asset-models/[id]`                              | Model reference information and documentation.                                                                                |
+| `/systems`, `/systems/[id]`                       | System directory, functional diagrams, asset plans and the latest ten tickets and interventions.                              |
+| `/systems/[id]/register`                          | Paginated system work records.                                                                                                |
+| `/tickets/[code]`                                 | Ticket details, interventions and resolution history.                                                                         |
+| `/tickets`                                        | Searchable ticket directory.                                                                                                  |
+| `/interventions`, `/interventions/[code]`         | Searchable intervention directory and individual work records.                                                                |
+| `/service-agreements`, `/service-agreements/[id]` | Agreement directory, provider and equipment details, plans and a calendar comparing planned periods with actual work.         |
+| `/planned-occurrences/[id]`                       | Reference period, interventions and completion history.                                                                       |
+| `/entities`, `/entities/[id]`                     | Entity directory, logos, agreements, documents and associated interventions.                                                  |
+| `/inspections`, `/inspections/[code]`             | Inspection directory, interactive plan and observation photographs.                                                           |
+| `/inspections/[code]/pdf`                         | On-demand inspection PDF preview.                                                                                             |
+| `/knowledge`, `/knowledge/[id]`                   | Searchable articles, tag filters and rendered Markdown.                                                                       |
+| `/quality`, `/quality/[code]`                     | Catalogue and reading view for current quality documents.                                                                     |
+| `/quality/workspace`                              | Quality workspace for revisions in progress.                                                                                  |
+| `/quality/preview/[id]`                           | Protected preview of a specific saved revision.                                                                               |
 
-The application header shows the signed-in user and offers sign-out. Links between records stay in the frontend; links to edit or manage a record are shown where the user's role permits them.
+The header groups navigation under **Infraestruturas** and **Qualidade e Conformidade**. **Conhecimento** remains available from the main navigation. The user bar contains **Terminar sessão** and shows **Administração** to users with panel access. Frontend-only users who sign in through Payload are redirected to the IMSCat home page.
 
 ### Assets requiring attention
 
@@ -434,31 +476,34 @@ Operational forms use visible, labelled sections with related fields arranged in
 
 ## Project organisation
 
-| Location | Responsibility |
-| --- | --- |
-| `src/payload.config.ts` | Payload setup, collection registration and applied role policies. |
-| `src/collections/` | Collection schemas, relationships and collection-specific hooks. |
-| `src/components/` | Admin controls and frontend components. |
-| `src/lib/permissions.ts` | Shared role checks. |
-| `src/lib/roleAccess.ts` | Collection policies and protected occurrence planning fields. |
-| `src/lib/systemScope.ts` | Cascading filters and source-scope inheritance. |
-| `src/lib/generateDatedCode.ts` | Ticket/intervention identifiers based on effective dates. |
-| `src/lib/workStatusProposals.ts` | Multi-asset proposals, confirmation and status event creation. |
-| `src/lib/ticketWorkflow.ts` | Ticket transitions, audit history and intervention safeguards. |
-| `src/lib/occurrenceWorkflow.ts` | Occurrence completion, validation, notes and safeguards. |
-| `src/lib/maintenanceRecurrence.ts` | Calendar recurrence calculations. |
-| `src/lib/maintenancePlanning.ts` | Shared generator, plan scope and occurrence identification. |
-| `scripts/generateMaintenanceOccurrences.ts` | Maintenance generation command and run logging. |
-| `deploy/systemd/` | Service and timer units for scheduled generation. |
-| `src/lib/inspectionIssuance.ts` | Inspection issuance and observation safeguards. |
-| `src/lib/inspectionReport.tsx` | Inspection PDF presentation. |
-| `src/lib/knowledge.ts` | Article visibility, searchable text and tag helpers. |
-| `src/lib/buildSystemDiagram.ts` | Mermaid definition generation. |
-| `src/app/(frontend)/` | Application pages and frontend styles. |
-| `src/app/(payload)/` | Payload admin/API integration. |
-| `src/payload-types.ts` | Generated collection types. |
-| `public/asset-icons/` | Static SVG icons. |
-| Upload directories | User-uploaded images, documents, plans and generated variants. |
+| Location                                    | Responsibility                                                    |
+| ------------------------------------------- | ----------------------------------------------------------------- |
+| `src/payload.config.ts`                     | Payload setup, collection registration and applied role policies. |
+| `src/collections/`                          | Collection schemas, relationships and collection-specific hooks.  |
+| `src/components/`                           | Admin controls and frontend components.                           |
+| `src/lib/permissions.ts`                    | Shared role checks.                                               |
+| `src/lib/roleAccess.ts`                     | Collection policies and protected occurrence planning fields.     |
+| `src/lib/systemScope.ts`                    | Cascading filters and source-scope inheritance.                   |
+| `src/lib/generateDatedCode.ts`              | Ticket/intervention identifiers based on effective dates.         |
+| `src/lib/workStatusProposals.ts`            | Multi-asset proposals, confirmation and status event creation.    |
+| `src/lib/ticketWorkflow.ts`                 | Ticket transitions, audit history and intervention safeguards.    |
+| `src/lib/occurrenceWorkflow.ts`             | Occurrence completion, validation, notes and safeguards.          |
+| `src/lib/maintenanceRecurrence.ts`          | Calendar recurrence calculations.                                 |
+| `src/lib/maintenancePlanning.ts`            | Shared generator, plan scope and occurrence identification.       |
+| `scripts/generateMaintenanceOccurrences.ts` | Maintenance generation command and run logging.                   |
+| `deploy/systemd/`                           | Service and timer units for scheduled generation.                 |
+| `src/lib/inspectionIssuance.ts`             | Inspection issuance and observation safeguards.                   |
+| `src/lib/inspectionReport.tsx`              | Inspection PDF presentation.                                      |
+| `src/lib/knowledge.ts`                      | Article visibility, searchable text and tag helpers.              |
+| `src/lib/qualityRevisionWorkflow.ts`        | Revision transitions, review history and publication safeguards.  |
+| `src/lib/qualityReading.ts`                 | Catalogue access, current revision checks and saved revision reading. |
+| `src/lib/qualityMarkdown.ts`                | Sanitised HTML table support in Markdown revisions.               |
+| `src/lib/buildSystemDiagram.ts`             | Mermaid definition generation.                                    |
+| `src/app/(frontend)/`                       | Application pages and frontend styles.                            |
+| `src/app/(payload)/`                        | Payload admin/API integration.                                    |
+| `src/payload-types.ts`                      | Generated collection types.                                       |
+| `public/asset-icons/`                       | Static SVG icons.                                                 |
+| Upload directories                          | User-uploaded images, documents, plans and generated variants.    |
 
 Upload paths are defined by each collection's `staticDir`. Include every configured upload location in backup and restore procedures.
 
@@ -472,14 +517,14 @@ The application uses port **3001**. Other Payload projects have separate reposit
 
 The last shared dependency baseline was:
 
-| Dependency | Recorded version |
-| --- | --- |
-| Payload and associated packages | `3.90.2` |
-| Next.js | `16.3.3` |
-| React / React DOM | `19.2.6` |
-| TypeScript | `5.7.3` |
-| Sharp | `0.35.4` |
-| Database adapter | `@payloadcms/db-postgres` |
+| Dependency                      | Recorded version          |
+| ------------------------------- | ------------------------- |
+| Payload and associated packages | `3.90.2`                  |
+| Next.js                         | `16.3.3`                  |
+| React / React DOM               | `19.2.6`                  |
+| TypeScript                      | `5.7.3`                   |
+| Sharp                           | `0.35.4`                  |
+| Database adapter                | `@payloadcms/db-postgres` |
 
 Node.js 24 and pnpm 10 have been used on the development server. **`package.json`, the lockfile and the actual installed runtime take precedence over this recorded baseline.** This README does not imply an upgrade has been performed.
 
@@ -582,7 +627,7 @@ Stage other intentional project changes explicitly. Review the staged diff befor
 Use English commit messages describing a coherent change rather than one commit per edited file. Suggested documentation commit:
 
 ```text
-Update SGA documentation for inspections and maintenance automation
+Document IMSCat quality revision and consultation workflows
 ```
 
 ## Validation checklist
@@ -608,17 +653,20 @@ Use these checks when changing workflow or access code:
 - [ ] The dashboard respects building order, keeps unplotted assets in the list and reports unknown states separately.
 - [ ] An inspection point appears on the plan and in the PDF preview with the correct photographs; issuance prevents further edits.
 - [ ] Knowledge article details, search results and tag counts respect each role’s visibility.
+- [ ] A quality editor can submit a saved draft with eligible reviewers, and the last required approval makes it effective and archives the previous edition.
+- [ ] A user with only the Consultation role lands on the home page after login and can read only the effective editions explicitly marked for internal consultation.
+- [ ] The saved revision preview and effective edition display Markdown tables and standalone HTML tables with merged cells.
 
 ## Known limitations and next steps
 
 - Verify the maintenance timer, logs and backup restore procedure on the deployment host.
-- Add notifications for operational work and failures. The current Payload configuration does not define an email adapter.
+- The admin panel can review recipients and queue ticket notifications. Verify email configuration and job execution on the deployment host before relying on delivery.
 - Add an explicit originating-intervention relationship for corrective tickets where useful.
 - Provide audited administrative corrections that reconcile confirmed proposals, historical events and current-state projections.
 - Consolidate the asset compliance workflow.
 - Consider historical system snapshots and diagram caching after measuring real workloads.
 - Persist issued inspection reports and the exact plan and photographs used if a fixed report archive becomes necessary.
-- Keep formal quality-document approval and controlled revision management separate from ordinary knowledge articles.
+- Pilot the controlled document workflow with Quality. Confirm how to record credited authorship and source dates, and review how to surface certificates and evidence across related records.
 
 ## Development conventions
 
